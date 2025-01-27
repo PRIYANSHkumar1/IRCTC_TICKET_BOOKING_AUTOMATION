@@ -92,3 +92,14 @@ The script handles multiple exceptions:
 - **`NoSuchElementException`**: Raised when an element is missing.
 - **`ElementNotInteractableException`**: Raised when an element cannot be interacted with.
 
+## Troubleshooting
+
+- **Captcha Issue**:  
+  Ensure that the CAPTCHA solver (`captcha_solver.py`) is implemented correctly and can extract CAPTCHA text.
+
+- **Slow Load Times**:  
+  If the IRCTC page takes too long to load, increase the wait times in the `WebDriverWait` calls.
+
+- **Element Not Found**:  
+  Double-check the XPaths used in the script; the IRCTC website may update their structure occasionally.
+
