@@ -50,3 +50,36 @@ train-booking-automation/
 ├── README.md                  # Project documentation (this file)
 └── requirements.txt            # List of required Python packages
 ```
+## Code Explanation
+
+### 1. `TrainBookingAutomation` Class
+
+This class contains the entire automation logic and is responsible for:
+
+- **Starting the browser**: `start_browser`
+- **Logging in to IRCTC**: `login`
+- **Searching for trains**: `search_train`
+- **Filling passenger details**: `fill_passenger_details`
+- **Completing the booking process**: `confirm_booking`
+- **Handling the entire booking flow**: `book_ticket`
+
+### 2. Dependencies
+
+- **Selenium WebDriver**: Used to control the browser.
+- **CAPTCHA solving logic**: Handled via the `captcha_solver.py` script.
+
+### 3. Steps Performed in the Script
+
+1. **Login**:
+   - Navigates to the IRCTC login page.
+   - Inputs the username and password.
+   - Handles CAPTCHA.
+
+2. **Train Search**:
+   - Inputs the station details, class, quota, and date to search for available trains.
+
+3. **Passenger Details**:
+   - Fills in the passenger information and proceeds to the next steps.
+
+4. **Booking Confirmation**:
+   - Completes the booking by filling in the payment details.
