@@ -41,3 +41,12 @@ cd train-booking-automation
 ```
 python train_booking_automation.py
 ```
+## File Structure
+```
+train-booking-automation/
+│
+├── captcha_solver.py           # Custom CAPTCHA solver (must be implemented)
+├── train_booking_automation.py # Main automation script
+├── README.md                  # Project documentation (this file)
+└── requirements.txt            # List of required Python packages
+```
