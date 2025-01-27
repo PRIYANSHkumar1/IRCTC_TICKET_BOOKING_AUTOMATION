@@ -83,3 +83,12 @@ This class contains the entire automation logic and is responsible for:
 
 4. **Booking Confirmation**:
    - Completes the booking by filling in the payment details.
+
+### 4. Error Handling
+
+The script handles multiple exceptions:
+
+- **`TimeoutException`**: Raised when elements are not found within the given time.
+- **`NoSuchElementException`**: Raised when an element is missing.
+- **`ElementNotInteractableException`**: Raised when an element cannot be interacted with.
+
