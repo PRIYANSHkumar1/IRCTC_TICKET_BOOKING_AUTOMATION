@@ -21,4 +21,23 @@ This project automates the process of booking train tickets on the [IRCTC](https
 You can install the required libraries using pip:
 
 ```bash
-pip install selenium
+pip install selenium 
+```
+## Setup Instructions
+1. **Clone the repository**:
+```
+git clone https://github.com/yourusername/train-booking-automation.git
+cd train-booking-automation
+```
+2. **Update user and passenger details**:
+
+- Modify the user_details dictionary with your IRCTC account credentials, travel details, and class preferences.
+- Update the passenger_details list with the passenger details for booking.
+
+3. **Ensure captcha solver is implemented**:
+
+- Implement or integrate a CAPTCHA solver script to handle CAPTCHA challenges during the login process. The current code uses extract_text_from_base64() from captcha_solver.py.
+- Run the script: Execute the script to automate the booking process:
+```
+python train_booking_automation.py
+```
