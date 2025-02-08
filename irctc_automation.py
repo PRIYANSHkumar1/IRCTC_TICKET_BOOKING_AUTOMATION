@@ -304,10 +304,7 @@ class TrainBookingAutomation:
             self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", captcha_box)
 
             # Clear the captcha input box and set the value
-            captcha_box.clear()  # Clear the existing text (if any)
-
-
-
+            captcha_box.clear()  # Clear the existing text (if any
 
 
             print("Radio captcha clicked successfully!") 
@@ -347,7 +344,7 @@ class TrainBookingAutomation:
             )
             pay_button.click()
 
-            time.sleep(300)
+            time.sleep(300) # wait time for downloading ticket
         except NoSuchElementException as e:
             print(f"Error during payment: {e}")
 
@@ -381,23 +378,18 @@ class TrainBookingAutomation:
 
 if __name__ == "__main__":
     user_details = {
-        "UserID": "Priyanshkumar9210",
-        "Password": "Silver123@",
-        "FromStation": "DELHI - DLI (NEW DELHI)",
-        "ToStation": "PATNA JN - PNBE ",
-        "Date": "18/01/2025",
-        "Date_1": "Fri, 18 Jan",
-        "Class": "Sleeper (SL)",#AC 3 Tier (3A)  Sleeper (SL)
-        "Class_Index": 2,
-        "Quota": "TATKAL",
+        "UserID": "",# Enter your IRCTC username
+        "Password": "", # Enter your IRCTC password
+        "FromStation": "PATNA JN - PNBE",
+        "ToStation": "DELHI - DLI (NEW DELHI)",
+        "Date": "18/01/2025",# Enter Travel date
+        "Date_1": "Fri, 18 Jan",# Enter Travel date in this format
+        "Class": "Sleeper (SL)",#AC 3 Tier (3A)  Sleeper (SL) 
+        "Class_Index": 2, # Manually check train option to select before travel
+        "Quota": "TATKAL", # TATKAL GENERAL
         "MobileNo": "1234567890",
     }
     
-    passenger_details = [
-        {"Name": "Passenger1", "Age": "30", "Gender": "Male"},
-        {"Name": "Passenger2", "Age": "25", "Gender": "Female"},
-        {"Name": "Passenger3", "Age": "25", "Gender": "Female"}
-    ]
 
     booking = TrainBookingAutomation(user_details, passenger_details)
     booking.book_ticket()
