@@ -337,7 +337,7 @@ class TrainBookingAutomation:
             
             # Input the desired text
             input_field.clear()  # Clear any pre-filled text, if necessary
-            input_field.send_keys("8448634755@ybl")
+            input_field.send_keys("") # Enter your UPI ID
 
             pay_button = WebDriverWait(self.driver, 120).until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "payment-btn"))
