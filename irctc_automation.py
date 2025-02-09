@@ -1,4 +1,6 @@
 import time
+import ast 
+from selenium.webdriver.chrome.options import Options
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -29,11 +31,23 @@ class TrainBookingAutomation:
         """
         Starts the browser with appropriate options, including incognito mode.
         """
-        options = webdriver.ChromeOptions()
-        options.add_argument("--start-maximized")  # Start browser maximized
-        options.add_argument("--incognito")       # Enable incognito mode
-    
-        service = Service()  # Specify ChromeDriver path if required
+
+
+        # Define optimized Chrome options
+        options = Options()
+        options.add_argument("--incognito")  # Run in incognito mode
+        options.add_argument("--start-maximized")  # Maximize window
+        options.add_argument("--disable-dev-shm-usage")  # Prevent crashes on Linux/Docker
+        options.add_argument("--disable-extensions")  # Disable extensions for speed
+        options.add_argument("--disable-infobars")  # Remove automation warning
+        options.add_experimental_option("excludeSwitches", ["enable-logging"])  # Suppress logs
+        
+        # Disable images to load pages faster
+        prefs = {"profile.managed_default_content_settings.images": 1}
+        options.add_experimental_option("prefs", prefs)
+        
+        # Define ChromeDriver service (provide the path if necessary)
+        service = Service()  # Adjust path if needed
         self.driver = webdriver.Chrome(service=service, options=options)
 
 
@@ -77,7 +91,7 @@ class TrainBookingAutomation:
             captcha_input_field.clear()
             captcha_input_field.send_keys(extracted_text)
             # Click the 'SIGN IN' button
-            WebDriverWait(self.driver, 20).until(
+            WebDriverWait(self.driver, 200).until(
                 EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'SIGN IN')]"))
             ).click()
             
@@ -172,7 +186,7 @@ class TrainBookingAutomation:
 
 
             # Wait for the "Search" button to be clickable and click it
-            search_button = WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, "//button[@class='search_btn train_Search']")))
+            search_button = WebDriverWait(self.driver, 60).until(EC.element_to_be_clickable((By.XPATH, "//button[@class='search_btn train_Search']")))
             search_button.click()
 
             # Define your variables
@@ -180,7 +194,7 @@ class TrainBookingAutomation:
             index_number = self.user_details["Class_Index"]  # Replace with your desired index number
             
             # Use the variables in the XPath
-            sleeper_button = WebDriverWait(self.driver, 40).until(
+            sleeper_button = WebDriverWait(self.driver, 300).until(
                 EC.element_to_be_clickable((By.XPATH, f"(//strong[text()='{travel_class}'])[{index_number}]"))
             )
             sleeper_button.click()
@@ -196,9 +210,10 @@ class TrainBookingAutomation:
             print("about to click button")
 
             # Wait for the button to be clickable and click it
-            button = WebDriverWait(self.driver, 40).until(
-                EC.element_to_be_clickable((By.XPATH, "//strong[text()='Sat, 18 Jan']"))
-            )
+            button = WebDriverWait(self.driver, 120).until(
+                EC.element_to_be_clickable((By.XPATH, f"//strong[text()='{self.user_details['Date_1']}']"))
+                )
+
             button.click()
             # Wait for the "Book Now" button to be clickable and click it
             book_now_button = WebDriverWait(self.driver, 600).until(
@@ -217,64 +232,49 @@ class TrainBookingAutomation:
         Fills in the passenger details.
         """
         try:
-            # Wait for the element to be present
-            input_box = WebDriverWait(self.driver, 600).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@aria-controls='pr_id_7_list' and @placeholder='Name']"))
-            )
+            # Start filling passenger details
+            index = 1
+            while index <= len(self.passenger_details):
+                # Check if the passenger name is empty
+                if passenger_details[index]["Passenger Name"] == "":
+                    print("Found empty passenger name. Stopping the loop.")
+                    break  # Exit loop if an empty name is found
+                            
             
-            # Set the value of the input box directly using JavaScript
-            input_box.send_keys("Priyansh")
-
-
-            # Locate the input element for passenger age and send the value "25"
-            # Locate an unfilled input field (without 'data-gtm-form-interact-field-id')
-            unfilled_input = self.driver.find_element(By.XPATH, "//input[@formcontrolname='passengerAge' and not(@data-gtm-form-interact-field-id)]")
+                print(f"Processing Passenger {index}: {self.passenger_details[index]}")
             
-            # Clear the field (if necessary) and input the value
-            unfilled_input.clear()
-            unfilled_input.send_keys("23")
-
-            
-            # Wait for the dropdown to be present
-            dropdown = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//select[@formcontrolname='passengerGender']"))
-            )
-            
-            # Create a Select object and select "Male"
-            Select(dropdown).select_by_visible_text("Male")
-
-            # Locate the button using XPath and click it
-            add_passenger_button = self.driver.find_element(By.XPATH, "//span[@class='prenext' and contains(text(), '+ Add Passenger')]")
-            add_passenger_button.click()
-
-
-           # Wait for the element to be present
-            input_box = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@aria-controls='pr_id_8_list' and @placeholder='Name']"))
-            )
-            
-            # Set the value of the input box directly using JavaScript
-            input_box.send_keys("Paul Sharma")
-            
-
-            unfilled_input = self.driver.find_element(By.XPATH, "//input[@formcontrolname='passengerAge' and not(@data-gtm-form-interact-field-id)]")
-            
-            # Clear the field (if necessary) and input the value
-            unfilled_input.clear()
-            unfilled_input.send_keys("24")
-
-            
-            # Wait for a dropdown without 'data-gtm-form-interact-field-id' to be present
-            dropdown = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//select[@formcontrolname='passengerGender' and not(@data-gtm-form-interact-field-id)]")
+                # Wait for the name input box
+                input_box = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, f"//input[@aria-controls='pr_id_{6 + index}_list' and @placeholder='Name']")
+                    )
                 )
-            )
+                input_box.send_keys(self.passenger_details[index]["Passenger Name"])
             
-            # Create a Select object and select "Male"
-            Select(dropdown).select_by_visible_text("Male")
-
-
+                # Wait for the age input box
+                age_input = self.driver.find_element(By.XPATH, "//input[@formcontrolname='passengerAge' and not(@data-gtm-form-interact-field-id)]")
+            
+                age_input.clear()
+                age_input.send_keys(self.passenger_details[index]["Age"])
+            
+                # Wait for the gender dropdown
+                dropdown = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "//select[@formcontrolname='passengerGender' and not(@data-gtm-form-interact-field-id)]")
+                    )
+                )
+                Select(dropdown).select_by_visible_text(self.passenger_details[index]["Gender"])
+                if index+1 <= len(self.passenger_details):
+                    if passenger_details[index+1]["Passenger Name"] != "":
+                        add_passenger_button = WebDriverWait(self.driver, 60).until(
+                            EC.element_to_be_clickable(
+                                (By.XPATH, "//span[@class='prenext' and contains(text(), '+ Add Passenger')]")
+                            )
+                        )
+                        add_passenger_button.click()
+                
+                index += 1  # Move to the next passenger
+            
             # Wait for the label to be clickable and then click it
             label = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//label[text()='Consider for Auto Upgradation.']"))
@@ -337,7 +337,7 @@ class TrainBookingAutomation:
             
             # Input the desired text
             input_field.clear()  # Clear any pre-filled text, if necessary
-            input_field.send_keys("") # Enter your UPI ID
+            input_field.send_keys(self.user_details["UPI_Address"]) # Enter your UPI ID
 
             pay_button = WebDriverWait(self.driver, 120).until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "payment-btn"))
@@ -367,7 +367,7 @@ class TrainBookingAutomation:
         
         self.search_train()
         print("Train search completed. Proceeding to fill passenger details...")
-        
+        #time.sleep(180)
         self.fill_passenger_details()
         print("Passenger details filled. Proceeding to confirm booking...")
         
@@ -377,19 +377,51 @@ class TrainBookingAutomation:
 
 
 if __name__ == "__main__":
-    user_details = {
-        "UserID": "",# Enter your IRCTC username
-        "Password": "", # Enter your IRCTC password
-        "FromStation": "PATNA JN - PNBE",
-        "ToStation": "DELHI - DLI (NEW DELHI)",
-        "Date": "18/01/2025",# Enter Travel date
-        "Date_1": "Fri, 18 Jan",# Enter Travel date in this format
-        "Class": "Sleeper (SL)",#AC 3 Tier (3A)  Sleeper (SL) 
-        "Class_Index": 2, # Manually check train option to select before travel
-        "Quota": "TATKAL", # TATKAL GENERAL
-        "MobileNo": "1234567890",
-    }
+    #user_details = {
+    #    "UserID": "",# Enter your IRCTC username
+    #    "Password": "", # Enter your IRCTC password
+    #    "FromStation": "",# Enter Boarding Station
+    #    "ToStation": "",# Enter Destination Station
+    #    "Date": "",# Enter Travel date
+    #    "Date_1": "",# Enter Travel date in this format
+    #    "Class": "",#AC 3 Tier (3A)  Sleeper (SL) 
+    #    "Class_Index": 9, # Manually check train option to select before travel
+    #    "Quota": "", # TATKAL GENERAL
+    #    "UPI_Address": "", # Enter Upi address
+    #    "MobileNo": "1234567890",
+    #}
+    #passenger Name, age ,gender
+    # Dictionary to store passenger details
+    #passenger_details = {
+    #    1: {"Passenger Name": "Niranjan kumar", "Age": "54", "Gender": "Male"},
+    #    2: {"Passenger Name": "", "Age": "", "Gender": ""},
+    #    3: {"Passenger Name": "", "Age": "0", "Gender": ""},
+    #    4: {"Passenger Name": "", "Age": "0", "Gender": ""},  # Empty name to trigger loop exit
+    #}
     
+    # Initialize an empty dictionary
+    user_details = {}
+    
+    # Open and read the file
+    with open("user_details.txt", "r") as file:
+        for line in file:
+            # Split key and value using ":"
+            if ":" in line:
+                key, value = line.strip().split(":", 1)
+                user_details[key.strip()] = value.strip()  # Remove leading/trailing spaces
+
+    print(user_details)
+
+    # Initialize an empty dictionary for passenger details
+    
+    # Open and read the file
+    with open("passengers.txt", "r") as file:
+        data = file.read()
+        # Convert the string into a dictionary
+        passenger_details = ast.literal_eval(data)
+        
+
+    print(passenger_details)
 
     booking = TrainBookingAutomation(user_details, passenger_details)
     booking.book_ticket()
